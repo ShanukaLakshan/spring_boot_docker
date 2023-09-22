@@ -1,0 +1,40 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main # Assuming your default branch is 'main'. Change if necessary.
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build Docker image
+        run: docker build -t your-image-name:latest .
+
+      - name: Run tests
+        run: |
+          # Assuming you have tests to run.
+          # You might run them here or during the Docker build process.
+
+      - name: Push to Docker Registry
+        run: |
+          echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+          docker push your-image-name:latest
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to server
+        run: |
+          # Commands to deploy your application to your server.
+          # This could involve SSH'ing into your server, pulling the new image, and restarting your container.
